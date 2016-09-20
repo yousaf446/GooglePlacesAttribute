@@ -6,6 +6,7 @@ include_once '../funcs.php';
 function savePlace($place_id, $attribute_id, $attribute_value) {
 
     $cookie =  $_COOKIE["favourite_beverage"];
+    $cookie = $cookie['guest'];
     $cookie_split = explode("_", $cookie);
     $user_id = $cookie_split[1];
 

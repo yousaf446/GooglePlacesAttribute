@@ -8,7 +8,7 @@
         <a href="#" class="navbar-brand">Find Your Favourite Beverage</a>
     </div>
     <div class="navbar-collapse collapse navbar-inverse-collapse">
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-right" id="login-register">
             <a href="register.php" class="navbar-brand login">Login / Register</a>
         </ul>
         <ul class="nav navbar-nav navbar-right">

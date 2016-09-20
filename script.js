@@ -4,6 +4,7 @@ var infowindow;
 var service;
 var map_center = new google.maps.LatLng(37.0902, -95.7129);
 var current_loc = "";
+var user_cookie;
 var user_name;
 var counter = 0;
 var placeInterval;
@@ -13,8 +14,15 @@ var attr_type = [];
 function initialize() {
 
     $.post('api/Users/Users.php', { key: 'SETCOOKIE'}, function(response) {
-        user_name = response;
-        $("#user").html("Welcome "+user_name);
+        var user_data = JSON.parse(response);
+        user_cookie = user_data.guest;
+        user_name = user_data.user;
+        if(user_name != "") {
+            $("#login-register").hide();
+            $("#user").html("Welcome "+user_name);
+        } else {
+            $("#user").html("Welcome "+user_cookie);
+        }
     });
 
     $.get('api/Attributes/Attribute.php', { key: 'GET'}, function(response) {

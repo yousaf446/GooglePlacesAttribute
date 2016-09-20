@@ -117,6 +117,7 @@
     </style>
 </head>
 <body>
+<?php $error = (isset($_GET['error'])) ? $_GET['error'] : ""; ?>
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
@@ -136,16 +137,12 @@
                 <div class="panel-body">
                     <div class="row">
                         <div class="col-lg-12">
-                            <form id="login-form" action="http://phpoll.com/login/process" method="post" role="form" style="display: block;">
+                            <form id="login-form" action="api/Users/Users.php" method="POST" role="form" style="display: block;">
                                 <div class="form-group">
-                                    <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                    <input type="text" name="user_email" id="user_email" tabindex="1" class="form-control" placeholder="UserEmail" value="">
                                 </div>
                                 <div class="form-group">
-                                    <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
-                                </div>
-                                <div class="form-group text-center">
-                                    <input type="checkbox" tabindex="3" class="" name="remember" id="remember">
-                                    <label for="remember"> Remember Me</label>
+                                    <input type="password" name="user_password" id="user_password" tabindex="2" class="form-control" placeholder="Password">
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
@@ -154,29 +151,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-lg-12">
-                                            <div class="text-center">
-                                                <a href="http://phpoll.com/recover" tabindex="5" class="forgot-password">Forgot Password?</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <input type="hidden" name="key" id="key_login"/>
+                                <?php if(isset($_GET['error']) && $_GET['error'] == 1) { ?> <div class="text-danger">Invalid Username / Password</div> <?php } ?>
                             </form>
-                            <form id="register-form" action="http://phpoll.com/register/process" method="post" role="form" style="display: none;">
+                            <form id="register-form" action="api/Users/Users.php" method="POST" role="form" style="display: none;">
                                 <div class="form-group">
-                                    <input type="text" name="username" id="username" tabindex="1" class="form-control" placeholder="Username" value="">
+                                    <input type="text" name="user_name" id="user_name" tabindex="1" class="form-control" placeholder="Username" value="">
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" name="email" id="email" tabindex="1" class="form-control" placeholder="Email Address" value="">
+                                    <input type="email" name="user_email" id="user_email" tabindex="1" class="form-control" placeholder="Email Address" value="">
                                 </div>
                                 <div class="form-group">
-                                    <input type="password" name="password" id="password" tabindex="2" class="form-control" placeholder="Password">
+                                    <input type="password" name="user_password" id="user_password" tabindex="2" class="form-control" placeholder="Password">
                                 </div>
-                                <div class="form-group">
-                                    <input type="password" name="confirm-password" id="confirm-password" tabindex="2" class="form-control" placeholder="Confirm Password">
-                                </div>
+                                <?php if(isset($_GET['error']) && $_GET['error'] == 2) { ?> <div class="text-danger">Email Adready Exist</div> <?php } ?>
                                 <div class="form-group">
                                     <div class="row">
                                         <div class="col-sm-6 col-sm-offset-3">
@@ -184,6 +172,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <input type="hidden" name="key" id="key_register"/>
                             </form>
                         </div>
                     </div>
@@ -204,19 +193,36 @@
 
     $(function() {
 
+        $('#key_login').val('LOGIN');
+
+        var error = '<?php echo $error; ?>';
+
+        if(error == '1') {
+            $("#login-form").delay(100).fadeIn(100);
+            $("#register-form").fadeOut(100);
+            $('#register-form-link').removeClass('active');
+            $('#login-form-link').addClass('active');
+            $('#key_login').val('LOGIN');
+        } else if(error == '2') {
+            $("#register-form").delay(100).fadeIn(100);
+            $("#login-form").fadeOut(100);
+            $('#login-form-link').removeClass('active');
+            $('#register-form-link').addClass('active');
+            $('#key_register').val('REGISTER');
+        }
         $('#login-form-link').click(function(e) {
             $("#login-form").delay(100).fadeIn(100);
             $("#register-form").fadeOut(100);
             $('#register-form-link').removeClass('active');
             $(this).addClass('active');
-            e.preventDefault();
+            $('#key_login').val('LOGIN');
         });
         $('#register-form-link').click(function(e) {
             $("#register-form").delay(100).fadeIn(100);
             $("#login-form").fadeOut(100);
             $('#login-form-link').removeClass('active');
             $(this).addClass('active');
-            e.preventDefault();
+            $('#key_register').val('REGISTER');
         });
 
     });
