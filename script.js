@@ -18,7 +18,6 @@ function initialize() {
         user_cookie = user_data.guest;
         user_name = user_data.user;
         if(user_name != "") {
-            $("#login-register").hide();
             $("#user").html("Welcome "+user_name);
         } else {
             $("#user").html("Welcome "+user_cookie);
