@@ -17,6 +17,9 @@
             <a href="register.php" class="navbar-brand login">Login / Register</a>
         </ul>
         <?php } else { ?>
+        <ul class="nav navbar-nav navbar-right" id="logout">
+            <a href="logout.php" class="navbar-brand login">Logout</a>
+        </ul>
         <ul class="nav navbar-nav navbar-right" id="history">
             <a href="history.php" class="navbar-brand login">View History</a>
         </ul>

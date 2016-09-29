@@ -82,7 +82,7 @@ function getPlaces() {
     var request = [];
     request.location = current_loc;
     request.radius = 5000;
-    request.types = ['establishment'];
+    request.types = ['restaurant', 'cafe'];
     var keyword = $("#searchName").val();
     if(keyword != "") request.keyword = keyword;
     service.nearbySearch(request, callback);
@@ -155,17 +155,18 @@ function createMarkers(places) {
         });
 
         google.maps.event.addListener(markers[counter], "rightclick", function (event) {
-            editAttribute(this.id, this.name);
+            $('#infoModal').modal('hide');
+            editAttribute(this.id, this.name, this.title);
         });
 
         google.maps.event.addListener(markers[counter], "click", function (event) {
-         getContent(this.id);
+         getContent(this.id, this.name);
         });
         counter++;
     });
 }, 20);
 }
-function editAttribute(place_id, counter) {
+function editAttribute(place_id, counter, title) {
     $.get('api/Attributes/Attribute.php', { key: 'GET', place_id: place_id}, function(response) {
         var data = JSON.parse(response);
         var content = "";
@@ -189,6 +190,7 @@ function editAttribute(place_id, counter) {
                 var option = current_val;
                 content += '<div class="col-md-3"><label>' + attributes[i].attribute_name + '</label></div><div class="col-md-9"><select id="attr_' + attributes[i].attribute_id + '" onchange="saveAttribute('+counter+', this.id, this.value)">';
                 var values = attributes[i].attribute_value.split(",");
+                content += '<option value="unknown">unknown</option>';
                 for(var i in values) {
                     var selected = "";
                     if(values[i] == current_val) {
@@ -200,6 +202,9 @@ function editAttribute(place_id, counter) {
             }
             content += '</div><br/>';
         }
+        $('#attr_header').css('background-color','black');
+        $('#attr_header').css('color','white');
+        $('#attr_header').html('<h3 class="modal-title">'+title+'</h3>');
         $('#attr-modal-body').html(content);
         $('#AttributeModal').modal('show');
     });
@@ -213,7 +218,7 @@ function saveAttribute(counter, attr_id, attr_value) {
     });
 }
 
-function getContent(place_id) {
+function getContent(place_id, counter) {
     var request = {
         placeId : place_id
     };
@@ -295,13 +300,60 @@ function getContent(place_id) {
         if(photo != undefined)
             body += '</div>';
         body += '</div>';
-        $('#mod_header').css('background-color','black');
-        $('#mod_header').css('color','white');
+        $.get('api/Attributes/Attribute.php', { key: 'GET', place_id: place_id}, function(response) {
+            var data = JSON.parse(response);
+            var content = "";
+            var attributes = data.attributes;
+            var place = data.place;
+            for(var i in attributes) {
+                var current_val = "";
+                for(var j in place) {
+                    if(place[j].attribute_id == attributes[i].attribute_id) {
+                        current_val = place[j].attribute_value;
+                    }
+                }
+                content += '<div class="col-md-12">';
+                var attr_value = "unknown";
+                if(attributes[i].attribute_type == 'switch') {
+                    var checked = "";
+                    if(current_val == 'true') {
+                        attr_value = "yes";
+                    } else if(current_val == 'false') {
+                        attr_value = "no";
+                    }
+                    content += '<div class="col-md-3"><label style="color:#CC5D11">' + attributes[i].attribute_name + '</label></div><div class="col-md-9"><b>'+attr_value+'</b></div>';
+                } else if(attributes[i].attribute_type == 'dropdown') {
+                    var option = current_val;
+                    content += '<div class="col-md-3"><label style="color:#CC5D11">' + attributes[i].attribute_name + '</label></div><div class="col-md-9"><b>';
+                    var values = attributes[i].attribute_value.split(",");
+                    var attr_value = "unknown";
+                    for(var i in values) {
+                        var selected = "";
+                        if(values[i] == current_val) {
+                            attr_value = values[i];
+                        }
+                    }
+                    content += attr_value+'</b></div>';
+                }
+                content += '</div><br/>';
+            }
 
-        $('#mod_body').html(body);
+            content += '<div class="col-md-12"><input type="button" onclick="showEdit('+counter+')" value="Edit Attributes" class="btn btn-primary" /></div>';
 
-        $('#infoModal').modal('show');
+            body += content;
+            $('#mod_header').css('background-color','black');
+            $('#mod_header').css('color','white');
+
+            $('#mod_body').html(body);
+
+            $('#infoModal').modal('show');
+        });
+
     });
+}
+
+function showEdit(mark) {
+    google.maps.event.trigger(markers[mark], 'rightclick');
 }
 
 function getAttrFilters() {
