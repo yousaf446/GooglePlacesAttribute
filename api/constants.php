@@ -8,7 +8,7 @@
 
 define ("MYSQL_HOST", "localhost");
 define ("MYSQL_USER", "root");
-define ("MYSQL_PASS", "root");
+define ("MYSQL_PASS", "");
 define ("MYSQL_DB", "favourite_beverage");
 // Tables List
 define ("MYSQL_TBL_GUEST", "guests");
